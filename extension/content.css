@@ -1,0 +1,5 @@
+/* content.css - Optional host-page styles if Shadow DOM isn't enough */
+.pj-badge-wrapper {
+  margin-top: 4px;
+  display: block;
+}

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: proximity_db
+    environment:
+      POSTGRES_USER: proximity_user
+      POSTGRES_PASSWORD: proximity_password
+      POSTGRES_DB: proximity_jobs
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: proximity_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  api:
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: proximity_api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://proximity_user:proximity_password@db:5432/proximity_jobs
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./api:/app
+
+volumes:
+  postgres_data:
